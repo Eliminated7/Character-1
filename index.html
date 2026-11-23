@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pixel Character — Safed Kauwa</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Jersey+15&family=Space+Grotesk:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="character.css">
+  <style>
+    body { margin: 0; background: var(--black); color: var(--white); font-family: var(--font-label); line-height: 1.5; }
+  </style>
+</head>
+<body>
+
+  <section class="meet">
+    <div class="meet__grid">
+      <div class="meet__stage"><div data-buddy="demo"></div></div>
+      <div>
+        <h2 class="meet__title">Say<br>hi<span class="caret"></span></h2>
+        <p class="meet__desc">This little one waves, types, thinks, cheers, says oops, walks and celebrates. Try its moods:</p>
+        <div class="chips" data-state-picker></div>
+      </div>
+    </div>
+  </section>
+
+  <script src="character.js"></script>
+  <script>
+    // one button per state; picking one plays it on the character
+    (function () {
+      const picker = document.querySelector("[data-state-picker]");
+      const demo = (window.Buddies || []).find((b) => b.el.dataset.buddy === "demo");
+      if (!picker || !demo) return;
+      Object.entries(window.BuddyStates).forEach(([key, { label }], i) => {
+        picker.insertAdjacentHTML("beforeend",
+          `<label class="chip"><input type="radio" name="buddy_state" value="${key}" ${i === 0 ? "checked" : ""}><span>${String(i + 1).padStart(2, "0")} ${label}</span></label>`);
+      });
+      picker.addEventListener("change", (e) => demo.set(e.target.value));
+      demo.el.addEventListener("click", () => demo.set("happy", 1600));
+    })();
+  </script>
+</body>
+</html>

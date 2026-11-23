@@ -1,0 +1,231 @@
+/* Safed Kauwa — pixel character + its "Say hi" state picker, standalone.
+   Drop character.css + character.js on any page, add <div data-buddy="demo"></div>. */
+
+:root {
+  --black: #040807;
+  --ink: #0b1312;
+  --deep: #033f3c;
+  --teal: #079c98;
+  --mint: #6fe0c8;
+  --pale: #d8f6ee;
+  --white: #ffffff;
+  --soft: #afe0d6;
+  --font-display: "Jersey 15", system-ui, sans-serif;
+  --font-label: "Space Grotesk", system-ui, sans-serif;
+}
+
+/* ---------- character ---------- */
+
+.buddy {
+  --spring: cubic-bezier(.34, 1.56, .64, 1);
+  --ease: cubic-bezier(.45, 0, .55, 1);
+  position: relative;
+  container-type: inline-size;
+  aspect-ratio: 1200 / 1270;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.buddy svg { display: block; width: 100%; height: 100%; overflow: visible; }
+
+.buddy .p,
+.buddy .l,
+.buddy .mouth { transform-box: view-box; }
+
+/* poses glide between states with a soft spring */
+.buddy .p { transition: transform .55s var(--spring); }
+
+.buddy .mouth { transform-origin: 550px 740px; transition: opacity .2s ease, transform .4s var(--spring); }
+.buddy .m-open, .buddy .m-flat { opacity: 0; transform: scale(.6); }
+
+/* defaults shared by most states: breathing + blinking */
+.buddy .p-all > .l  { animation: b-bob 1.6s var(--ease) infinite alternate; }
+.buddy .p-eyes > .l { animation: b-blink 4.2s ease-in-out infinite; }
+
+.buddy .p-bow > .l  { animation: b-bow 1.6s var(--ease) infinite alternate; }
+.buddy[data-state="happy"] .p-bow > .l,
+.buddy[data-state="celebrate"] .p-bow > .l { animation: b-bow .22s ease-in-out infinite alternate; }
+.buddy[data-state="walking"] .p-bow > .l   { animation: b-bow .3s ease-in-out infinite alternate; }
+.buddy[data-state="thinking"] .p-bow       { transform: rotate(-14deg); }
+.buddy[data-state="oops"] .p-bow           { transform: translate(-20px, 30px) rotate(35deg); }
+
+/* 2 · wave */
+.buddy[data-state="wave"] .p-armR      { transform: rotate(-125deg); }
+.buddy[data-state="wave"] .p-armR > .l { animation: b-waveR .42s var(--ease) infinite alternate; }
+
+/* 3 · typing */
+.buddy[data-state="typing"] .p-eyes      { transform: translate(0, 34px); }
+.buddy[data-state="typing"] .p-armL      { transform: rotate(-28deg); }
+.buddy[data-state="typing"] .p-armR      { transform: rotate(28deg); }
+.buddy[data-state="typing"] .p-armL > .l { animation: b-tapL .16s ease-in-out infinite alternate; }
+.buddy[data-state="typing"] .p-armR > .l { animation: b-tapR .16s ease-in-out -.08s infinite alternate; }
+.buddy[data-state="typing"] .p-all > .l  { animation: b-nod .32s var(--ease) infinite alternate; }
+
+/* 4 · thinking */
+.buddy[data-state="thinking"] .p-eyes     { transform: translate(-42px, -40px); }
+.buddy[data-state="thinking"] .p-armL     { transform: rotate(16deg); }
+.buddy[data-state="thinking"] .p-armR     { transform: rotate(-10deg); }
+.buddy[data-state="thinking"] .p-all > .l { animation: b-sway 3.2s var(--ease) infinite; }
+
+/* 5 · happy */
+.buddy[data-state="happy"] .p-eyes,
+.buddy[data-state="celebrate"] .p-eyes        { transform: scaleY(.3); }
+.buddy[data-state="happy"] .p-eyes > .l,
+.buddy[data-state="celebrate"] .p-eyes > .l   { animation: none; }
+.buddy[data-state="happy"] .m-smile,
+.buddy[data-state="celebrate"] .m-smile       { opacity: 0; transform: scale(.6); }
+.buddy[data-state="happy"] .m-open,
+.buddy[data-state="celebrate"] .m-open        { opacity: 1; transform: none; }
+.buddy[data-state="happy"] .p-armL            { transform: rotate(135deg); }
+.buddy[data-state="happy"] .p-armR            { transform: rotate(-135deg); }
+.buddy[data-state="happy"] .p-armL > .l       { animation: b-waveL .31s var(--ease) infinite alternate; }
+.buddy[data-state="happy"] .p-armR > .l       { animation: b-waveR .31s var(--ease) infinite alternate; }
+.buddy[data-state="happy"] .p-all > .l        { animation: b-hop .62s var(--ease) infinite; }
+.buddy[data-state="happy"] .p-shadow > .l     { animation: b-squash .62s var(--ease) infinite; }
+
+/* 6 · oops */
+.buddy[data-state="oops"] .p-eyes     { transform: scale(.72); }
+.buddy[data-state="oops"] .m-smile    { opacity: 0; transform: scale(.6); }
+.buddy[data-state="oops"] .m-flat     { opacity: 1; transform: none; }
+.buddy[data-state="oops"] .p-armL     { transform: rotate(95deg); }
+.buddy[data-state="oops"] .p-armR     { transform: rotate(-95deg); }
+.buddy[data-state="oops"] .p-all > .l { animation: b-shake .45s ease-in-out 2; }
+
+/* 7 · walking */
+.buddy[data-state="walking"] .p-eyes      { transform: translate(30px, 0); }
+.buddy[data-state="walking"] .p-legL > .l { animation: b-step .3s ease-in-out infinite alternate; }
+.buddy[data-state="walking"] .p-legR > .l { animation: b-step .3s ease-in-out -.3s infinite alternate; }
+.buddy[data-state="walking"] .p-armL > .l { animation: b-swingL .3s ease-in-out infinite alternate; }
+.buddy[data-state="walking"] .p-armR > .l { animation: b-swingL .3s ease-in-out -.3s infinite alternate; }
+.buddy[data-state="walking"] .p-all > .l  { animation: b-walk .15s ease-in-out infinite alternate; }
+
+/* 8 · celebrate */
+.buddy[data-state="celebrate"] .p-armL      { transform: rotate(150deg); }
+.buddy[data-state="celebrate"] .p-armR      { transform: rotate(-150deg); }
+.buddy[data-state="celebrate"] .p-armL > .l { animation: b-waveL .2s ease-in-out infinite alternate; }
+.buddy[data-state="celebrate"] .p-armR > .l { animation: b-waveR .2s ease-in-out infinite alternate; }
+.buddy[data-state="celebrate"] .p-all > .l  { animation: b-jump .8s var(--ease) infinite; }
+.buddy[data-state="celebrate"] .p-shadow > .l { animation: b-squash .8s var(--ease) infinite; }
+
+/* speech bubble */
+.buddy__bubble {
+  position: absolute;
+  right: 66%;
+  top: 6%;
+  font-family: var(--font-label);
+  font-size: max(10px, 8cqw);
+  line-height: 1;
+  white-space: nowrap;
+  color: var(--black);
+  background: var(--white);
+  padding: .45em .6em;
+  box-shadow: 0 -3px 0 0 var(--black), 0 3px 0 0 var(--black), -3px 0 0 0 var(--black), 3px 0 0 0 var(--black);
+  opacity: 0;
+  transform: translateY(12px) scale(.5);
+  transform-origin: 100% 100%;
+  transition: opacity .25s ease, transform .45s cubic-bezier(.34, 1.56, .64, 1);
+  pointer-events: none;
+  z-index: 2;
+}
+.buddy__bubble::after {
+  content: "";
+  position: absolute;
+  right: 8px;
+  bottom: -9px;
+  width: 8px; height: 6px;
+  background: var(--white);
+  box-shadow: -3px 0 0 0 var(--black), 3px 0 0 0 var(--black), 0 3px 0 0 var(--black);
+}
+.buddy.talking .buddy__bubble { opacity: 1; transform: none; }
+.buddy__bubble i {
+  display: inline-block;
+  width: .45em; height: .45em;
+  margin: 0 .12em;
+  background: currentColor;
+  animation: b-dot .9s ease-in-out infinite;
+}
+.buddy__bubble i:nth-child(2) { animation-delay: .15s; }
+.buddy__bubble i:nth-child(3) { animation-delay: .3s; }
+
+/* confetti */
+.buddy__fx { position: absolute; inset: 0; pointer-events: none; }
+.buddy__fx span {
+  position: absolute;
+  left: 50%; top: 45%;
+  width: 3.5cqw; height: 3.5cqw;
+  animation: b-confetti 1.2s cubic-bezier(.2, .7, .3, 1) forwards;
+}
+
+@keyframes b-bow     { from { transform: rotate(-6deg); } to { transform: rotate(8deg); } }
+@keyframes b-bob     { to { transform: translateY(-20px); } }
+@keyframes b-blink   { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(.08); } }
+@keyframes b-waveR   { to { transform: rotate(-26deg); } }
+@keyframes b-waveL   { to { transform: rotate(26deg); } }
+@keyframes b-tapL    { to { transform: rotate(-12deg); } }
+@keyframes b-tapR    { to { transform: rotate(12deg); } }
+@keyframes b-nod     { to { transform: translateY(12px); } }
+@keyframes b-sway    { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(3deg); } 75% { transform: rotate(-3deg); } }
+@keyframes b-hop     { 0%, 100% { transform: none; } 15% { transform: scale(1.06, .92); } 45% { transform: translateY(-130px) scale(.96, 1.04); } 75% { transform: scale(1.04, .96); } }
+@keyframes b-jump    { 0%, 100% { transform: none; } 15% { transform: scale(1.08, .9); } 50% { transform: translateY(-220px) rotate(-6deg); } 80% { transform: scale(1.04, .96); } }
+@keyframes b-squash  { 0%, 100% { transform: none; } 45%, 50% { transform: scaleX(.6); opacity: .5; } }
+@keyframes b-shake   { 0%, 100% { transform: none; } 20% { transform: translateX(-36px) rotate(-3deg); } 40% { transform: translateX(30px) rotate(2deg); } 60% { transform: translateX(-22px); } 80% { transform: translateX(14px); } }
+@keyframes b-step    { to { transform: translateY(-50px); } }
+@keyframes b-swingL  { to { transform: rotate(-24deg); } }
+@keyframes b-walk    { to { transform: translateY(-14px); } }
+@keyframes b-dot     { 0%, 100% { transform: translateY(0); } 40% { transform: translateY(-.35em); } }
+@keyframes b-confetti {
+  from { transform: translate(-50%, -50%); opacity: 1; }
+  to   { transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) rotate(var(--rot)); opacity: 0; }
+}
+
+/* ---------- "Say hi" section ---------- */
+
+.meet { padding: 96px 48px; }
+.meet__grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 56px; align-items: center; max-width: 1200px; margin: 0 auto; }
+.meet__stage {
+  background: var(--soft);
+  padding: 40px 48px 24px;
+  box-shadow: 0 -4px 0 0 var(--white), 0 4px 0 0 var(--white), -4px 0 0 0 var(--white), 4px 0 0 0 var(--white), 12px 12px 0 0 var(--teal);
+}
+.meet__title {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(40px, 7vw, 88px);
+  line-height: .95;
+  text-transform: uppercase;
+  margin: 0 0 40px;
+}
+.meet__desc { color: var(--pale); margin: 0 0 24px; max-width: 420px; }
+
+.caret { display: inline-block; width: .5em; height: .8em; background: currentColor; margin-left: 6px; animation: caret 1s steps(1) infinite; }
+@keyframes caret { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+
+.chips { display: flex; flex-wrap: wrap; gap: 10px; }
+.chip { position: relative; }
+.chip input { position: absolute; opacity: 0; pointer-events: none; }
+.chip span {
+  display: inline-block;
+  font-family: var(--font-label);
+  font-weight: 600;
+  letter-spacing: .06em;
+  font-size: 14px;
+  padding: 8px 14px;
+  background: var(--ink);
+  color: var(--white);
+  cursor: pointer;
+  box-shadow: 0 -2px 0 0 var(--deep), 0 2px 0 0 var(--deep), -2px 0 0 0 var(--deep), 2px 0 0 0 var(--deep);
+  user-select: none;
+}
+.chip span:hover { background: var(--deep); }
+.chip input:checked + span { background: var(--mint); color: var(--black); }
+.chip input:checked + span:hover { background: var(--white); }
+.chip input:focus-visible + span { outline: 3px dashed var(--mint); outline-offset: 4px; }
+
+@media (max-width: 720px) {
+  .meet { padding: 64px 24px; }
+  .meet__grid { grid-template-columns: 1fr; gap: 32px; }
+  .meet__stage { padding: 32px 24px 16px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .buddy *, .caret { animation: none !important; transition: none !important; }
+}
